@@ -66,7 +66,7 @@ def handle_pic(kwargs):
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
     generate_pic()
     print(postUrl)
-    files = {'file': open('123.png', 'rb')}
+    files = {'file': open('123.jpg', 'rb')}
     r = requests.post(postUrl, files=files)
     if r.status_code == 200:
         resp = loads(r.text)
@@ -121,8 +121,9 @@ def generate_pic():
         for c in range(0,3):
             sample_image[y1:y2,x1:x2,c] = (alpha_h * hat[hat_y1:hat_y2,hat_x1:hat_x2,c]+ alpha*sample_image[y1:y2,x1:x2,c])
     #保存最终结果
-    cv2.imwrite('123.png',sample_image)
+    cv2.imwrite('123.jpg',sample_image)
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)
+    # generate_pic()
