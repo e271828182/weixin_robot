@@ -69,7 +69,7 @@ def handle_pic(kwargs):
         resp = loads(r.text)
         print(resp)
         MediaID = resp.get('media_id')
-        return render_template(
+        tem =  render_template(
             'pic.html',
             ToUserName=kwargs['ToUserName'],
             FromUserName=kwargs['FromUserName'],
@@ -77,6 +77,8 @@ def handle_pic(kwargs):
             MsgType='image',
             MediaID=MediaID,
         )
+        print(tem)
+        return tem
 
 
 
