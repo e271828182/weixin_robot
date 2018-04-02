@@ -63,7 +63,8 @@ def handle_pic(kwargs):
     accessToken = Basic().get_access_token()
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
     print(postUrl)
-    r = requests.post(postUrl, files=open('123.jpg', 'rb'))
+    files = {'file': open('123.jpg', 'rb')}
+    r = requests.post(postUrl, files=files)
     if r.status_code == 200:
         resp = loads(r.text)
         print(resp)
