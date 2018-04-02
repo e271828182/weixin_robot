@@ -1,4 +1,4 @@
-#!/usr/bin python
+#! python3.6
 # -*- coding=utf-8 -*-
 
 from flask import Flask, request
@@ -19,6 +19,7 @@ def index():
     else:
         data = request.get_data()
         xml = ET.fromstring(data)
+        print(xml)
         ToUserName = xml.findtext('.//ToUserName')
         FromUserName = xml.findtext('.//FromUserName')
         CreateTime = xml.findtext('.//CreateTime')
@@ -43,5 +44,5 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=False)
+    app.run(host='0.0.0.0', port=80, debug=True)
 
