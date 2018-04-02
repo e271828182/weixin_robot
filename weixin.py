@@ -57,11 +57,17 @@ def handle_text(kwargs):
 
 def handle_pic(kwargs):
     img = requests.get(kwargs['PicUrl'])
+    if img.status_code == 200:
+        with open('123.jpg', 'wb') as f:
+            f.write(img.content)
     accessToken = Basic().get_access_token()
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
-    if img.status_code == 200:
-        resp_json = loads(requests.post(url=postUrl, files=img))
-        MediaID = resp_json.get('MediaID')
+    print(postUrl)
+    r = requests.post(postUrl, files=open('123.jpg', 'rb'))
+    if r.status_code == 200:
+        resp = loads(r.text)
+        print(resp)
+        MediaID = resp.get('MediaID')
         return render_template(
             'pic.html',
             ToUserName=kwargs['ToUserName'],
