@@ -66,7 +66,7 @@ def handle_pic(kwargs):
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
     generate_pic()
     print(postUrl)
-    files = {'file': open('123.jpg', 'rb')}
+    files = {'file': open('123.png', 'rb')}
     r = requests.post(postUrl, files=files)
     if r.status_code == 200:
         resp = loads(r.text)

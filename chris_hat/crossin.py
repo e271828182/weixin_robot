@@ -1,7 +1,8 @@
-#coding:utf-8
+#! python3.6
+# -*- coding=utf-8 -*-
+
 import cv2
 import random
-import time
 
 
 def generate_pic():
@@ -42,6 +43,8 @@ def generate_pic():
             sample_image[y1:y2,x1:x2,c] = (alpha_h * hat[hat_y1:hat_y2,hat_x1:hat_x2,c]+ alpha*sample_image[y1:y2,x1:x2,c])
     #保存最终结果
     cv2.imwrite('../123.png',sample_image)
-        
+
+if __name__ =='__main__':
+    generate_pic()
     
 
