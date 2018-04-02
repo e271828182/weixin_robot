@@ -10,3 +10,4 @@ debug.log
 **/frontsrc/dist
 env/*
 env
+test/*
