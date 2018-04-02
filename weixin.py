@@ -68,7 +68,7 @@ def handle_pic(kwargs):
     if r.status_code == 200:
         resp = loads(r.text)
         print(resp)
-        MediaID = resp.get('MediaID')
+        MediaID = resp.get('media_id')
         return render_template(
             'pic.html',
             ToUserName=kwargs['ToUserName'],
