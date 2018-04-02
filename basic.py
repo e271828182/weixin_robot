@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # filename: basic.py
-import urllib
+import requests
 import time
 import json
 
@@ -15,7 +15,7 @@ class Basic:
         appSecret = "2b2d4bf5530a752f911a73509b30ab13"
         postUrl = (
             "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s" % (appId, appSecret))
-        urlResp = urllib.urlopen(postUrl)
+        urlResp = requests.get(postUrl)
         urlResp = json.loads(urlResp.read())
         self.__accessToken = urlResp['access_token']
         self.__leftTime = urlResp['expires_in']
