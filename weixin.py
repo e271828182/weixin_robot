@@ -8,6 +8,8 @@ import requests
 from json import loads
 from basic import Basic
 
+from chris_hat.crossin import generate_pic
+
 app = Flask(__name__)
 
 
@@ -62,6 +64,7 @@ def handle_pic(kwargs):
             f.write(img.content)
     accessToken = Basic().get_access_token()
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
+    generate_pic()
     print(postUrl)
     files = {'file': open('123.jpg', 'rb')}
     r = requests.post(postUrl, files=files)
