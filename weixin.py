@@ -17,12 +17,10 @@ app = Flask(__name__)
 def index():
     if request.method == 'GET':
         echostr = request.args.get(key='echostr')
-        print(echostr)
         return echostr
     else:
         data = request.get_data()
         xml = ET.fromstring(data)
-        print(data)
         kwargs = dict(
             ToUserName=xml.findtext('.//ToUserName'),
             FromUserName=xml.findtext('.//FromUserName'),
@@ -65,14 +63,12 @@ def handle_pic(kwargs):
     accessToken = Basic().get_access_token()
     postUrl = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s" % (accessToken, "image")
     generate_pic()
-    print(postUrl)
     files = {'file': open('123.jpg', 'rb')}
     r = requests.post(postUrl, files=files)
     if r.status_code == 200:
         resp = loads(r.text)
-        print(resp)
         MediaID = resp.get('media_id')
-        tem =  render_template(
+        return render_template(
             'pic.html',
             ToUserName=kwargs['ToUserName'],
             FromUserName=kwargs['FromUserName'],
@@ -80,8 +76,6 @@ def handle_pic(kwargs):
             MsgType='image',
             MediaID=MediaID,
         )
-        print(tem)
-        return tem
 
 
 def generate_pic():
@@ -92,7 +86,6 @@ def generate_pic():
     #OpenCv人脸检测
     face_patterns = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     faces = face_patterns.detectMultiScale(sample_image,scaleFactor = 1.1,minNeighbors = 8,minSize = (50,50))
-    print("len---",len(faces))
     #圣诞帽
     hats = []
     for i in range(4):
