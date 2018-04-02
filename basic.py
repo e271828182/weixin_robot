@@ -16,7 +16,7 @@ class Basic:
         postUrl = (
             "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s" % (appId, appSecret))
         urlResp = requests.get(postUrl)
-        urlResp = json.loads(urlResp.read())
+        urlResp = json.loads(urlResp.text)
         self.__accessToken = urlResp['access_token']
         self.__leftTime = urlResp['expires_in']
 
