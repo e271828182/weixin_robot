@@ -19,7 +19,7 @@ def index():
     else:
         data = request.get_data()
         xml = ET.fromstring(data)
-        print(xml)
+        print(data)
         ToUserName = xml.findtext('.//ToUserName')
         FromUserName = xml.findtext('.//FromUserName')
         CreateTime = xml.findtext('.//CreateTime')
