@@ -96,19 +96,25 @@ def handle_voice(kwargs):
     print(get_url)
     r = requests.get(url=get_url)
     if r.status_code == 200:
-        with open('voice.amr', 'wb') as f:
-            f.write(r.content)
+        voice = r.content
+        # with open('voice.amr', 'wb') as f:
+        #     f.write(r.content)
 
-    def get_file_content(filePath):
-        with open(filePath, 'rb') as fp:
-            return fp.read()
+    # def get_file_content(filePath):
+    #     with open(filePath, 'rb') as fp:
+    #         return fp.read()
+
     APP_ID = '11052668'
     API_KEY = 'lir2iuuDuVgcCSx82MAS0vEk'
     SECRET_KEY = 'dKZxNhEUdGDPxGbFrCZHYXAtGC6rDYmV'
 
     client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
-    resp = client.asr(get_file_content('voice.amr'), 'amr', 16000, {
+    # resp = client.asr(get_file_content('voice.amr'), kwargs['Format'], 16000, {
+    #     'dev_pid': '1536',
+    # })
+
+    resp = client.asr(voice, kwargs['Format'], 16000, {
         'dev_pid': '1536',
     })
 
