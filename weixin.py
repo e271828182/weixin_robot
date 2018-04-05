@@ -20,6 +20,7 @@ def index():
         return echostr
     else:
         data = request.get_data()
+        print(data)
         xml = ET.fromstring(data)
         kwargs = dict(
             ToUserName=xml.findtext('.//ToUserName'),
