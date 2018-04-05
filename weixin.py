@@ -92,7 +92,7 @@ def handle_pic(kwargs):
 
 def handle_voice(kwargs):
     accessToken = Basic().get_access_token()
-    get_url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=" % (accessToken, kwargs['MediaId'])
+    get_url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s" % (accessToken, kwargs['MediaId'])
     r = requests.get(url=get_url)
     if r.status_code == 200:
         with open('voice.amr', 'wb') as f:
