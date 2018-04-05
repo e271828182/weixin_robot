@@ -9,6 +9,7 @@ from json import loads
 from basic import Basic
 import cv2
 import random
+from aip import AipSpeech
 
 app = Flask(__name__)
 
@@ -26,16 +27,24 @@ def index():
             ToUserName=xml.findtext('.//ToUserName'),
             FromUserName=xml.findtext('.//FromUserName'),
             CreateTime=xml.findtext('.//CreateTime'),
-            Content=xml.findtext('.//Content'),
+            MsgType=xml.findtext('.//MsgType'),
             MsgId=xml.findtext('.//MsgId'),
-            MsgType=xml.findtext('.//MsgType')
+
+            Content=xml.findtext('.//Content'),
+
+            MediaId=xml.findtext('.//MediaId'),
+            Format=xml.findtext('.//Format'),
+            Recognition=xml.findtext('.//Recognition'),
+
+            PicUrl=xml.findtext('.//PicUrl'),
         )
         if kwargs['MsgType'] == 'text':
             return handle_text(kwargs)
         if kwargs['MsgType'] == 'image':
-            kwargs['PicUrl'] = xml.findtext('.//PicUrl')
-            kwargs['MediaId'] = xml.findtext('.//MediaId')
             return handle_pic(kwargs)
+
+        if kwargs['MsgType'] == 'voice':
+            return handle_voice(kwargs)
 
 
 def handle_text(kwargs):
@@ -55,6 +64,7 @@ def handle_text(kwargs):
         MsgType='text',
         Content=content,
     )
+
 
 def handle_pic(kwargs):
     img = requests.get(kwargs['PicUrl'])
@@ -79,43 +89,75 @@ def handle_pic(kwargs):
         )
 
 
-def generate_pic():
 
-    tar="123.jpg"
+def handle_voice(kwargs):
+    accessToken = Basic().get_access_token()
+    get_url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&type=%s" % (accessToken, "image")
+    r = requests.get(url=get_url)
+    voice = r.content
+    APP_ID = '11052668'
+    API_KEY = 'lir2iuuDuVgcCSx82MAS0vEk'
+    SECRET_KEY = 'dKZxNhEUdGDPxGbFrCZHYXAtGC6rDYmV'
+
+    client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
+
+    resp = client.asr(voice, 'amr', 16000, {
+        'dev_pid': '1536',
+    })
+
+    if resp['err_no'] == 0:
+        content = ','.join(resp['result'])
+    else:
+        content = resp['err_msg']
+
+    return render_template(
+        'text.html',
+        ToUserName=kwargs['ToUserName'],
+        FromUserName=kwargs['FromUserName'],
+        CreateTime=kwargs['CreateTime'],
+        MsgType='text',
+        Content=content,
+    )
+
+
+
+def generate_pic():
+    tar = "123.jpg"
     sample_image = cv2.imread(tar)
 
-    #OpenCv人脸检测
+    # OpenCv人脸检测
     face_patterns = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-    faces = face_patterns.detectMultiScale(sample_image,scaleFactor = 1.1,minNeighbors = 8,minSize = (50,50))
-    #圣诞帽
+    faces = face_patterns.detectMultiScale(sample_image, scaleFactor=1.1, minNeighbors=8, minSize=(50, 50))
+    # 圣诞帽
     hats = []
     for i in range(4):
-        hats.append(cv2.imread('img/hat%d.png'%i,-1))
+        hats.append(cv2.imread('img/hat%d.png' % i, -1))
 
     for face in faces:
-        #随机一顶帽子
+        # 随机一顶帽子
         hat = random.choice(hats)
-        #调整帽子尺寸
-        scale = face[3] / hat.shape[0]*1.25
-        hat = cv2.resize(hat,(0,0),fx = scale,fy = scale)
-        #根据人脸坐标调整帽子位置
-        x_offset = int (face[0] + face[2] / 2 - hat.shape[1]/2)
-        y_offset = int (face[1] - hat.shape[0] / 2)
-        #计算贴图位置，注意防止超过边界的情况
-        x1,x2 = max(x_offset,0),min(x_offset + hat.shape[1], sample_image.shape[1])
-        y1,y2 = max(y_offset,0),min(y_offset + hat.shape[0], sample_image.shape[0])
+        # 调整帽子尺寸
+        scale = face[3] / hat.shape[0] * 1.25
+        hat = cv2.resize(hat, (0, 0), fx=scale, fy=scale)
+        # 根据人脸坐标调整帽子位置
+        x_offset = int(face[0] + face[2] / 2 - hat.shape[1] / 2)
+        y_offset = int(face[1] - hat.shape[0] / 2)
+        # 计算贴图位置，注意防止超过边界的情况
+        x1, x2 = max(x_offset, 0), min(x_offset + hat.shape[1], sample_image.shape[1])
+        y1, y2 = max(y_offset, 0), min(y_offset + hat.shape[0], sample_image.shape[0])
         hat_x1 = max(0, -x_offset)
-        hat_x2 = hat_x1 + x2 -x1
+        hat_x2 = hat_x1 + x2 - x1
         hat_y1 = max(0, -y_offset)
-        hat_y2 = hat_y1 + y2 -y1
-        #透明部分的处理
-        alpha_h = hat[hat_y1:hat_y2, hat_x1:hat_x2,3]/255
+        hat_y2 = hat_y1 + y2 - y1
+        # 透明部分的处理
+        alpha_h = hat[hat_y1:hat_y2, hat_x1:hat_x2, 3] / 255
         alpha = 1 - alpha_h
-        #按3个通道合并图片
-        for c in range(0,3):
-            sample_image[y1:y2,x1:x2,c] = (alpha_h * hat[hat_y1:hat_y2,hat_x1:hat_x2,c]+ alpha*sample_image[y1:y2,x1:x2,c])
-    #保存最终结果
-    cv2.imwrite('123.jpg',sample_image)
+        # 按3个通道合并图片
+        for c in range(0, 3):
+            sample_image[y1:y2, x1:x2, c] = (
+            alpha_h * hat[hat_y1:hat_y2, hat_x1:hat_x2, c] + alpha * sample_image[y1:y2, x1:x2, c])
+    # 保存最终结果
+    cv2.imwrite('123.jpg', sample_image)
 
 
 if __name__ == "__main__":
