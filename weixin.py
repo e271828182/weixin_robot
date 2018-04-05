@@ -96,7 +96,7 @@ def handle_voice(kwargs):
     print(get_url)
     r = requests.get(url=get_url)
     if r.status_code == 200:
-        voice = r.content[0]
+        voice = r.content
         with open('voice.amr', 'wb') as f:
             f.write(voice)
 
