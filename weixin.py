@@ -96,13 +96,9 @@ def handle_voice(kwargs):
     print(get_url)
     r = requests.get(url=get_url)
     if r.status_code == 200:
-        voice = r.content
-        # with open('voice.amr', 'wb') as f:
-        #     f.write(r.content)
-
-    # def get_file_content(filePath):
-    #     with open(filePath, 'rb') as fp:
-    #         return fp.read()
+        voice = r.content[0]
+        with open('voice.amr', 'wb') as f:
+            f.write(voice)
 
     APP_ID = '11052668'
     API_KEY = 'lir2iuuDuVgcCSx82MAS0vEk'
@@ -110,27 +106,24 @@ def handle_voice(kwargs):
 
     client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
-    # resp = client.asr(get_file_content('voice.amr'), kwargs['Format'], 16000, {
-    #     'dev_pid': '1536',
-    # })
-
     resp = client.asr(voice, kwargs['Format'], 16000, {
         'dev_pid': '1536',
     })
 
     if resp['err_no'] == 0:
         content = ','.join(resp['result'])
+        kwargs['MsgType'] = 'text'
+        kwargs['Content'] = content
+        handle_text(kwargs)
     else:
-        content = resp['err_msg']
-
-    return render_template(
-        'text.html',
-        ToUserName=kwargs['ToUserName'],
-        FromUserName=kwargs['FromUserName'],
-        CreateTime=kwargs['CreateTime'],
-        MsgType='text',
-        Content=content,
-    )
+        return render_template(
+            'text.html',
+            ToUserName=kwargs['ToUserName'],
+            FromUserName=kwargs['FromUserName'],
+            CreateTime=kwargs['CreateTime'],
+            MsgType='text',
+            Content=resp['err_msg'],
+        )
 
 
 
