@@ -102,7 +102,7 @@ def handle_voice(kwargs):
         with open(filePath, 'rb') as fp:
             return fp.read()
 
-    voice = r.content
+    print(r.content)
     APP_ID = '11052668'
     API_KEY = 'lir2iuuDuVgcCSx82MAS0vEk'
     SECRET_KEY = 'dKZxNhEUdGDPxGbFrCZHYXAtGC6rDYmV'
