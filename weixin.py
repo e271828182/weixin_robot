@@ -94,6 +94,14 @@ def handle_voice(kwargs):
     accessToken = Basic().get_access_token()
     get_url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&type=%s" % (accessToken, "image")
     r = requests.get(url=get_url)
+    if r.status_code == 200:
+        with open('voice.amr', 'wb') as f:
+            f.write(r.content)
+
+    def get_file_content(filePath):
+        with open(filePath, 'rb') as fp:
+            return fp.read()
+
     voice = r.content
     APP_ID = '11052668'
     API_KEY = 'lir2iuuDuVgcCSx82MAS0vEk'
@@ -101,7 +109,7 @@ def handle_voice(kwargs):
 
     client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
-    resp = client.asr(voice, 'amr', 16000, {
+    resp = client.asr(get_file_content('voice.amr'), 'amr', 16000, {
         'dev_pid': '1536',
     })
 
