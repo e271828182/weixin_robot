@@ -10,6 +10,7 @@ from basic import Basic
 import cv2
 import random
 from aip import AipSpeech
+from pydub import AudioSegment
 
 app = Flask(__name__)
 
@@ -106,7 +107,14 @@ def handle_voice(kwargs):
 
     client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
-    resp = client.asr(voice, kwargs['Format'], 16000, {
+    au = AudioSegment.from_file(file='voice.amr', format='amr')
+    au.export(out_f='voice.wav', format='wav')
+
+    def get_voice(file_path):
+        with open(file_path, 'rb') as f:
+            return f.read()
+
+    resp = client.asr(get_voice('voice.wav'), 'wav', 16000, {
         'dev_pid': '1536',
     })
 
