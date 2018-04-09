@@ -22,7 +22,6 @@ def index():
         return echostr
     else:
         data = request.get_data()
-        print(data)
         xml = ET.fromstring(data)
         kwargs = dict(
             ToUserName=xml.findtext('.//ToUserName'),
@@ -94,7 +93,6 @@ def handle_pic(kwargs):
 def handle_voice(kwargs):
     accessToken = Basic().get_access_token()
     get_url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s" % (accessToken, kwargs['MediaId'])
-    print(get_url)
     r = requests.get(url=get_url)
     if r.status_code == 200:
         voice = r.content
